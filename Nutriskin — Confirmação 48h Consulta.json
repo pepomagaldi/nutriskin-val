@@ -1,0 +1,303 @@
+{
+  "name": "Nutriskin — Confirmação 48h Consulta",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "974e9f99-84b1-4446-9491-88868a6d4118",
+      "name": "Cron — 8h seg-sex",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1104,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst tomorrow = new Date(now);\ntomorrow.setDate(now.getDate() + 1);\n\nconst pad = (n) => String(n).padStart(2, '0');\nconst year = tomorrow.getFullYear();\nconst month = pad(tomorrow.getMonth() + 1);\nconst day = pad(tomorrow.getDate());\n\nconst start = `${year}-${month}-${day}T00:00:00-03:00`;\nconst end   = `${year}-${month}-${day}T23:59:59-03:00`;\nconst dateStr = `${day}/${month}/${year}`;\n\nreturn [{ json: { start, end, tomorrow_date: dateStr } }];"
+      },
+      "id": "67ec487c-f72c-4806-9d4d-ecf73bf58801",
+      "name": "Calcular Amanhã",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "contato@nutriskin.com.br",
+          "mode": "list",
+          "cachedResultName": "contato@nutriskin.com.br"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $('Calcular Amanhã').item.json.start }}",
+        "timeMax": "={{ $('Calcular Amanhã').item.json.end }}",
+        "options": {
+          "orderBy": "startTime"
+        }
+      },
+      "id": "5dc877d6-d960-4da1-9fa7-494e8cbffd50",
+      "name": "Buscar Eventos Amanhã",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        128
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sizqRTusiuHppMO3",
+          "name": "Renata - NutriSkin - Agenda"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const events = $input.all();\nconst results = [];\n\nfor (const item of events) {\n  const ev = item.json;\n  const title = ev.summary || '';\n  const desc = ev.description || '';\n\n  // Só eventos Nutriskin\n  if (!title.toLowerCase().includes('nutriskin')) continue;\n\n  // Extrai telefone da descrição\n  const telMatch = desc.match(/Telefone:\\s*(\\S+)/);\n  if (!telMatch) continue;\n\n  let telefone = telMatch[1].trim().replace('@s.whatsapp.net', '');\n\n  // Extrai nome\n  const nomeMatch = desc.match(/Paciente:\\s*(.+)/);\n  const nome = nomeMatch ? nomeMatch[1].trim() : title.replace(/Nutriskin\\s*[—-]\\s*/,'').replace(/\\s*\\(.*\\)$/,'').trim();\n\n  // Extrai tipo da descrição\n  const tipoMatch = desc.match(/Tipo:\\s*(.+)/);\n  const tipoRaw = tipoMatch ? tipoMatch[1].trim().toLowerCase() : '';\n\n  // Classifica tipo_consulta\n  let tipo_consulta = 'reconsulta_presencial';\n  const isOnline = tipoRaw.includes('online') || title.toLowerCase().includes('online');\n  const isPrimeira = tipoRaw.includes('1ª') || tipoRaw.includes('primeira') || tipoRaw.includes('1a');\n\n  if (isPrimeira && isOnline) tipo_consulta = '1a_consulta_online';\n  else if (isPrimeira && !isOnline) tipo_consulta = '1a_consulta_presencial';\n  else if (!isPrimeira && isOnline) tipo_consulta = 'reconsulta_online';\n  else tipo_consulta = 'reconsulta_presencial';\n\n  // Formata horário\n  const startTime = ev.start?.dateTime || ev.start?.date || '';\n  const startDate = new Date(startTime);\n  const hora = startDate.getHours();\n  const min = startDate.getMinutes();\n  const horarioFormatado = min === 0 ? `${hora}h` : `${hora}h${String(min).padStart(2,'0')}min`;\n\n  const diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];\n  const diaSemana = diasSemana[startDate.getDay()];\n\n  const dia = String(startDate.getDate()).padStart(2,'0');\n  const mes = String(startDate.getMonth()+1).padStart(2,'0');\n  const dataFormatada = `${dia}/${mes}`;\n\n  results.push({\n    json: { telefone, nome, horario: horarioFormatado, dia_semana: diaSemana, data: dataFormatada, tipo_consulta, event_id: ev.id }\n  });\n}\n\nif (results.length === 0) {\n  return [{ json: { skip: true } }];\n}\n\nreturn results;"
+      },
+      "id": "06dc1f93-0a16-4b47-bba4-2a681c462553",
+      "name": "Parsear Eventos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "skip-check",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a6942623-b84d-48c4-ba6f-3e20f30ec6c9",
+      "name": "Tem eventos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Monta mensagem de confirmação 48h conforme tipo\nconst { nome, horario, dia_semana, data, tipo_consulta, modalidade } = $json;\n\nlet mensagem = '';\n\nconst base = `Olá, ${nome}. Tudo bem? Passando para confirmar a sua consulta `;\n\nswitch (tipo_consulta) {\n  case '1a_consulta_presencial':\n    mensagem = `${base}amanhã, ${dia_semana}, dia ${data}, às ${horario}, no consultório (presencial). Você consegue comparecer?\\n\\nLembrando: caso ainda não tenha preenchido o formulário pré-consulta, segue o link: [LINK_FORMULARIO_PRE_CONSULTA]\\n\\nAguardamos você!`;\n    break;\n    \n  case '1a_consulta_online':\n    mensagem = `${base}online amanhã, ${dia_semana}, dia ${data}, às ${horario}. Você consegue comparecer?\\n\\nLembrando: caso ainda não tenha preenchido o formulário pré-consulta, segue o link: [LINK_FORMULARIO_PRE_CONSULTA]\\n\\nLembrando também de enviar as fotos conforme as orientações, caso ainda não tenha enviado.\\n\\nSegue novamente o link da sessão online: [LINK_VIDEOCHAMADA]\\n\\nAguardamos você!`;\n    break;\n    \n  case 'reconsulta_presencial':\n    mensagem = `${base}amanhã, ${dia_semana}, dia ${data}, às ${horario}, no consultório (presencial). Você consegue comparecer?\\n\\nAguardamos você!`;\n    break;\n    \n  case 'reconsulta_online':\n    mensagem = `${base}online amanhã, ${dia_semana}, dia ${data}, às ${horario}. Você consegue comparecer?\\n\\nLembrando de enviar as fotos conforme as orientações, caso ainda não tenha enviado.\\n\\nSegue novamente o link da sessão online: [LINK_VIDEOCHAMADA]\\n\\nAguardamos você!`;\n    break;\n    \n  default:\n    mensagem = `${base}amanhã, ${dia_semana}, dia ${data}, às ${horario}. Você consegue comparecer?\\n\\nAguardamos você!`;\n}\n\nreturn [{\n  json: {\n    ...$json,\n    mensagem\n  }\n}];"
+      },
+      "id": "1da8827e-f292-401b-9f5f-998a4180b8f1",
+      "name": "Montar Mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Corrige telefone para formato Evolution API\nlet telefone = $json.telefone;\n\n// Remove caracteres não numéricos\ntelefone = telefone.replace(/\\D/g, '');\n\n// Garante código do país 55\nif (!telefone.startsWith('55')) {\n  telefone = '55' + telefone;\n}\n\n// Correção do nono dígito para celulares brasileiros (DDD + 8 dígitos)\n// Formato esperado: 55 + DDD(2) + número(9)\nif (telefone.length === 12) {\n  // Faltando o 9: 55 + DDD(2) + 8 dígitos → inserir 9 após DDD\n  telefone = telefone.slice(0, 4) + '9' + telefone.slice(4);\n}\n\nreturn [{\n  json: {\n    ...$json,\n    telefone_formatado: telefone\n  }\n}];"
+      },
+      "id": "388e7265-696e-4258-804b-b2445c6e813b",
+      "name": "Formatar Telefone",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://powerfultick-evolution.cloudfy.live/message/sendText/WhatsApp%20Testes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.telefone_formatado }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9c1758fb-fdb3-40be-ace6-fb6239ba912f",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        240
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4GqkN5gEDIsnMLx9",
+          "name": "Header Auth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { message: 'Nenhum evento para processar hoje. Execução encerrada.' } }];"
+      },
+      "id": "4ec145d0-c092-484b-bffc-f57f8371a930",
+      "name": "Sem Eventos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron — 8h seg-sex": {
+      "main": [
+        [
+          {
+            "node": "Calcular Amanhã",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Amanhã": {
+      "main": [
+        [
+          {
+            "node": "Buscar Eventos Amanhã",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Eventos Amanhã": {
+      "main": [
+        [
+          {
+            "node": "Parsear Eventos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Eventos": {
+      "main": [
+        [
+          {
+            "node": "Tem eventos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem eventos?": {
+      "main": [
+        [
+          {
+            "node": "Sem Eventos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Montar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Formatar Telefone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Telefone": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f2b10973-f25c-4610-8496-8a703f9df713",
+  "meta": {
+    "instanceId": "8b4585c2be73ada135ba27f8a9d17b71a4921af15f29cfc3b5d42608b57b0ab4"
+  },
+  "id": "eETBUI034wEYOOzC",
+  "tags": [
+    {
+      "updatedAt": "2026-03-25T01:58:49.059Z",
+      "createdAt": "2026-03-25T01:58:49.059Z",
+      "id": "Xex4BYBPIEQ31Diu",
+      "name": "Nutriskin"
+    }
+  ]
+}

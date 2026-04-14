@@ -1,0 +1,6 @@
+﻿node_modules/
+.env
+*.log
+.vscode/
+desktop.ini
+workflows/backups/*.local.json
