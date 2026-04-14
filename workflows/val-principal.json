@@ -3758,7 +3758,7 @@
           "conditions": [
             {
               "id": "4279d458-001c-4a51-9ba6-58ab897c3165",
-              "leftValue": "={{ $json.gestante }}",
+              "leftValue": "={{ $('Detectar Agendamento').first().json.gestante }}",
               "rightValue": false,
               "operator": {
                 "type": "boolean",
