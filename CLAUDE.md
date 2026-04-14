@@ -80,27 +80,35 @@ ALTER TABLE dados_cliente ADD COLUMN IF NOT EXISTS condicao_saude TEXT DEFAULT '
 
 ## 3. HISTÓRICO DE PATCHES (IMPORTANTE)
 
-### Estado no n8n Cloud hoje (ponto zero): v3
+### Estado no n8n Cloud hoje: v4 (atualizado 14/04/2026)
 
-O workflow que está rodando em produção hoje é o **patch v3** (1 campo por mensagem + regex contextual). **Tem um bug conhecido que não foi corrigido:** quando o paciente conclui o cadastro, `tipo_consulta` fica vazio porque o Gemini Flash às vezes esquece de incluir no bloco `[DADOS]`. Isso faz `dadosCompletos = false` e trava o fluxo.
+O workflow em produção é o **patch v4**, validado em 14/04/2026 às 20:38 no cenário 1ª presencial não-gestante (ponta a ponta). Inclui:
 
-### Patch v4 pendente de aplicação
-
-Está documentado mas NÃO foi pro ar. Adiciona fallback determinístico em `Extrair Dados` pra capturar `tipo_consulta` e `modalidade` via regex na mensagem do paciente, independente do Gemini preencher o bloco ou não. **Primeira tarefa quando retomar: aplicar esse patch e validar com teste de 1ª presencial não-gestante.**
-
-Keywords detectadas pelo fallback:
+**v4 — Fallback determinístico (Extrair Dados):**
+Adiciona detecção via regex na mensagem do paciente + output do LLM quando o Gemini Flash omite o bloco `[DADOS]`. Keywords:
 - `tipo_consulta = 1a_consulta`: "primeira", "primeira vez", "nova", "nunca"
 - `tipo_consulta = reconsulta`: "já sou", "já fui", "voltando", "reconsulta", "retorno"
 - Reclassificação 12 meses: se já era `reconsulta` e disser "mais", "faz tempo", "mais de 12", "mais de um ano" → vira `1a_consulta`
 - `modalidade = presencial`: "presencial", "consultório", "pessoalmente", "físico"
 - `modalidade = online`: "online", "videochamada", "vídeo", "remoto"
 
+**v4 — Fix conexão Switch Tipo Envio:**
+Switch recebia input do "Enviar Confirmação" (HTTP Response sem campo `tipo`) em vez do "Montar Confirmação". Corrigido: Montar Confirmação agora sai em paralelo para Enviar Confirmação E Switch Tipo Envio.
+
+**v4 — Prompt Cérebro 2 (3 melhorias):**
+- Agenda cheia: formato BR obrigatório para [data] ("segunda-feira, dia 20 de abril", nunca ISO)
+- Exemplos negativos de horário (9h errado, 9 horas certo, 9h30min certo)
+- Passo 1.5: "qualquer dia/tanto faz" → 1 chamada buscar_eventos de 7 dias, sem repetir pergunta
+
+**v4.1 — Fix IF "Não é gestante?":**
+Condição buscava `$json.gestante` (vinha do Enviar Formulário, HTTP Response sem o campo). Corrigido para `$('Detectar Agendamento').first().json.gestante`.
+
 ### Testes de aceitação
 
 Antes de declarar "pronto pra Renata":
 
-1. ✅ **Reconsulta presencial** (já validado na v3, 08/04) — só confirmação, nada mais
-2. ⏳ **1ª presencial não-gestante** — confirmação + apresentação + formulário + folha de preparo
+1. ✅ **Reconsulta presencial** (validado v3, 08/04) — só confirmação, nada mais
+2. ✅ **1ª presencial não-gestante** (validado v4, 14/04) — confirmação + apresentação + formulário + folha de preparo. 5/5 critérios: Switch roteando, formato data BR, formato horário, envio materiais completo, IF gestante
 3. ⏳ **1ª presencial gestante** — confirmação + apresentação + formulário, SEM folha
 4. ⏳ **1ª online** — confirmação + apresentação + formulário + orientações Body 3D
 5. ⏳ **Reconsulta online** — confirmação + orientações Body 3D
@@ -316,10 +324,10 @@ Adicional do histórico:
 
 ## 8. PRÓXIMAS TAREFAS EM ORDEM
 
-1. **[BLOQUEADOR]** Aplicar patch v4 no `Extrair Dados` pra capturar `tipo_consulta` e `modalidade` via fallback determinístico
-2. Importar no n8n Cloud e validar cenário 1ª presencial não-gestante (o mais completo)
+1. ~~**[BLOQUEADOR]** Aplicar patch v4~~ — FEITO 14/04
+2. ~~Importar no n8n Cloud e validar cenário 1ª presencial não-gestante~~ — FEITO 14/04
 3. Gravar vídeo do teste aprovado pra mandar pra Renata
-4. Validar os outros 5 cenários (1ª presencial gestante, 1ª online, reconsulta online, +12 meses, rec. presencial)
+4. Validar os outros 4 cenários pendentes (1ª presencial gestante, 1ª online, reconsulta online, +12 meses)
 5. Após Renata aprovar: migrar Evolution API `WhatsApp Testes` pro número real de produção
 6. Adicionar coluna `condicao_saude` no Supabase da Renata (rodar ALTER TABLE)
 7. Implementar alerta de 24h antes pra Renata gerar link da sessão online (quando ela voltar a testar e topar essa feature)
