@@ -82,7 +82,9 @@ ALTER TABLE dados_cliente ADD COLUMN IF NOT EXISTS condicao_saude TEXT DEFAULT '
 
 ### Estado no n8n Cloud hoje: v4 (atualizado 14/04/2026)
 
-O workflow em produção é o **patch v4**, validado em 14/04/2026 às 20:38 no cenário 1ª presencial não-gestante (ponta a ponta). Inclui:
+O workflow em produção é o **patch v4**, validado em 14/04/2026 às 20:38 no cenário 1ª presencial não-gestante (ponta a ponta). Workflow ativo no n8n Cloud: `5Cin9NFtFbJIdIZ9` ("Nutriskin - Com checklist"). O antigo `E45e0ftLJNrE6UBl` está **inativo**.
+
+Inclui:
 
 **v4 — Fallback determinístico (Extrair Dados):**
 Adiciona detecção via regex na mensagem do paciente + output do LLM quando o Gemini Flash omite o bloco `[DADOS]`. Keywords:
@@ -103,15 +105,35 @@ Switch recebia input do "Enviar Confirmação" (HTTP Response sem campo `tipo`) 
 **v4.1 — Fix IF "Não é gestante?":**
 Condição buscava `$json.gestante` (vinha do Enviar Formulário, HTTP Response sem o campo). Corrigido para `$('Detectar Agendamento').first().json.gestante`.
 
+### Bug identificado 14/04 noite — Cérebro 1 encerra cadastro prematuramente (1ª online)
+
+**Execução 19346** (workflow `5Cin9NFtFbJIdIZ9`, 14/04 às 22:26): Cenário 1ª online, estado `coletando_dados` com apenas `nome` preenchido. Paciente mandou CPF (`03611864013`). Cérebro 1 respondeu "Seus dados foram registrados. Vou verificar os horários disponíveis." — pulando data_nascimento, email, altura, endereco, CEP.
+
+**Diagnóstico:** Extrair Dados funcionou corretamente (parseou CPF, setou `dadosCompletos=false`, `askingField=data_nascimento`). O bug é no Cérebro 1 (LLM Gemini Flash) que generalizou do padrão de reconsulta (nome+CPF→done). Causa provável: Memory Cérebro 1 com `contextWindowLength=20` carregando contexto de testes anteriores de reconsulta.
+
+**Patch v5 desenhado (NÃO aplicado):** branch `patch/v5-cerebro1-strict-fields`
+- FIX 1: Adicionar seção CAMPOS OBRIGATÓRIOS POR CENÁRIO no systemMessage do Cérebro 1, com guardrail explícito proibindo "dados registrados" antes de ter todos os campos.
+- FIX 2: Reduzir `contextWindowLength` de 20 para 4 no Memory Cérebro 1.
+
+**Decisão:** re-testar primeiro (pode ser flake do Gemini). Se reproduzir → aplicar patch v5.
+
+### Bugs de infra identificados 14/04
+
+**Redis "Acumula" entre testes rápidos:** Quando testes são feitos em sequência rápida, o node "Acumula" (Redis) junta mensagens de execuções diferentes no mesmo `propertyName`, causando erro "Multiple matches found" com array de múltiplas mensagens. Workaround: esperar TTL expirar (~5-10min entre testes). Fix futuro: script `scripts/reset-test-state.ps1` que limpa Postgres + Redis.
+
+### Polimento identificado 14/04
+
+**Cérebro 2 — "Qual prefere?" com 1 horário só:** Quando há apenas 1 horário disponível, Cérebro 2 pergunta "Qual prefere?" em vez de "Esse horário fica bom para você?". Ajuste trivial no prompt do Cérebro 2.
+
 ### Testes de aceitação
 
 Antes de declarar "pronto pra Renata":
 
 1. ✅ **Reconsulta presencial** (validado v3, 08/04) — só confirmação, nada mais
 2. ✅ **1ª presencial não-gestante** (validado v4, 14/04) — confirmação + apresentação + formulário + folha de preparo. 5/5 critérios: Switch roteando, formato data BR, formato horário, envio materiais completo, IF gestante
-3. ⏳ **1ª presencial gestante** — confirmação + apresentação + formulário, SEM folha
-4. ⏳ **1ª online** — confirmação + apresentação + formulário + orientações Body 3D
-5. ⏳ **Reconsulta online** — confirmação + orientações Body 3D
+3. ✅ **Reconsulta online** (validado v4, 14/04 ~22:37) — confirmação + orientações Body 3D. Observação menor: Cérebro 2 oferece "Qual prefere?" com apenas 1 horário disponível
+4. ⏳ **1ª online** — bug Cérebro 1 na exec 19346 (encerrou cadastro após CPF). Pendente reteste antes de aplicar patch v5
+5. ⏳ **1ª presencial gestante** — confirmação + apresentação + formulário, SEM folha
 6. ⏳ **Paciente antigo +12 meses** — reclassifica pra 1ª automaticamente
 
 ---
@@ -326,12 +348,16 @@ Adicional do histórico:
 
 1. ~~**[BLOQUEADOR]** Aplicar patch v4~~ — FEITO 14/04
 2. ~~Importar no n8n Cloud e validar cenário 1ª presencial não-gestante~~ — FEITO 14/04
-3. Gravar vídeo do teste aprovado pra mandar pra Renata
-4. Validar os outros 4 cenários pendentes (1ª presencial gestante, 1ª online, reconsulta online, +12 meses)
-5. Após Renata aprovar: migrar Evolution API `WhatsApp Testes` pro número real de produção
-6. Adicionar coluna `condicao_saude` no Supabase da Renata (rodar ALTER TABLE)
-7. Implementar alerta de 24h antes pra Renata gerar link da sessão online (quando ela voltar a testar e topar essa feature)
-8. **[FUTURO]** Produtizar pra outros clientes: abstrair variáveis de configuração (valores, horários, URLs, nome da clínica) em tabela de config no Supabase
+3. ~~Validar reconsulta online~~ — FEITO 14/04 noite
+4. **Re-testar 1ª online** — aguardar Redis limpar (manhã já terá expirado). Se reproduzir bug Cérebro 1 → aplicar patch v5 (strict fields + reduzir memory window). Se NÃO reproduzir → flake do Gemini, seguir.
+5. **Testar 1ª presencial gestante** — confirmação + apresentação + formulário, SEM folha
+6. **Testar paciente +12 meses** — reclassifica pra 1ª automaticamente
+7. **Polimento Cérebro 2** — "Esse horário fica bom?" quando só tem 1 disponível
+8. Gravar vídeo dos 5 cenários funcionando e mandar pra Renata
+9. Após Renata aprovar: migrar Evolution API `WhatsApp Testes` pro número real de produção
+10. Adicionar coluna `condicao_saude` no Supabase da Renata (rodar ALTER TABLE)
+11. Implementar alerta de 24h antes pra Renata gerar link da sessão online (quando ela voltar a testar e topar essa feature)
+12. **[FUTURO]** Produtizar pra outros clientes: abstrair variáveis de configuração (valores, horários, URLs, nome da clínica) em tabela de config no Supabase
 
 ---
 
