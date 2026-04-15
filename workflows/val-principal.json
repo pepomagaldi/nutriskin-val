@@ -48,32 +48,23 @@
     },
     {
       "parameters": {
-        "operation": "getAll",
-        "tableId": "dados_cliente",
-        "returnAll": true,
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "telefone",
-              "condition": "eq",
-              "keyValue": "={{ $json.body.data.key.remoteJid }}"
-            }
-          ]
-        }
+        "operation": "executeQuery",
+        "query": "SELECT * FROM dados_cliente WHERE telefone = '{{ $json.body.data.key.remoteJid }}' ORDER BY created_at DESC LIMIT 1",
+        "options": {}
       },
       "id": "a9e2e9b5-58a6-453a-a792-a66826f31f36",
       "name": "Buscar Contatos",
-      "type": "n8n-nodes-base.supabase",
+      "type": "n8n-nodes-base.postgres",
       "position": [
         4528,
         7008
       ],
-      "typeVersion": 1,
+      "typeVersion": 2.6,
       "alwaysOutputData": true,
       "credentials": {
-        "supabaseApi": {
-          "id": "kGs8C4hFZ53qIWD9",
-          "name": "Supabase account"
+        "postgres": {
+          "id": "6tp8L1ciEAA4MOQB",
+          "name": "PostSupaBase"
         }
       }
     },
