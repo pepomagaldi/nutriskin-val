@@ -134,7 +134,7 @@
             },
             {
               "fieldId": "message",
-              "fieldValue": "={{ $('Webhook').item.json.body.data.message.conversation }}"
+              "fieldValue": "={{ $('Webhook').first().json.body.data.message.conversation }}"
             }
           ]
         }
@@ -202,7 +202,7 @@
               "id": "82fd4b01-31c5-4ca5-b78c-76dfc613fc12",
               "name": "mensagem",
               "type": "string",
-              "value": "={{ $('Webhook').item.json.body.data.message.conversation }}"
+              "value": "={{ $('Webhook').first().json.body.data.message.conversation }}"
             }
           ]
         },
@@ -317,12 +317,12 @@
               "id": "abdd98e1-85d1-43c9-a3b6-4e8a0b00e064",
               "name": "telefone",
               "type": "string",
-              "value": "={{ $('Mensagem').item.json.telefone }}"
+              "value": "={{ $('Mensagem').first().json.telefone }}"
             },
             {
               "id": "b51dbefa-a4fb-40ab-97ef-71e76858fe8f",
               "name": "id",
-              "value": "={{ $('Dados do Usuário').item.json.idUser }}",
+              "value": "={{ $('Dados do Usuário').first().json.idUser }}",
               "type": "string"
             }
           ]
@@ -357,7 +357,7 @@
                 "operation": "equals"
               },
               "leftValue": "={{ $json.propertyName.last() }}",
-              "rightValue": "={{ $('Mensagem').item.json.text }}"
+              "rightValue": "={{ $('Mensagem').first().json.text }}"
             }
           ]
         },
@@ -375,7 +375,7 @@
     {
       "parameters": {
         "operation": "delete",
-        "key": "={{ $('Mensagem').item.json.telefone }}"
+        "key": "={{ $('Mensagem').first().json.telefone }}"
       },
       "id": "9be35930-c147-4337-a895-bb9e9e0de8b0",
       "name": "Apaga Mensagens",
@@ -573,7 +573,7 @@
               "id": "17694db0-6248-444f-afb9-ff7ed13996ef",
               "name": "pergunta",
               "type": "string",
-              "value": "={{ $('Webhook').item.json.body.data.message.extendedTextMessage.text }}"
+              "value": "={{ $('Webhook').first().json.body.data.message.extendedTextMessage.text }}"
             }
           ]
         },
@@ -598,13 +598,13 @@
               "id": "2f8e1fbf-9134-4b48-be29-066509e021f5",
               "name": "telefone",
               "type": "string",
-              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+              "value": "={{ $('Webhook').first().json.body.data.key.remoteJid }}"
             },
             {
               "id": "a6004904-d9e1-4627-be79-d2a5b073d44f",
               "name": "mensagem",
               "type": "string",
-              "value": "={{ $('Webhook').item.json.body.data.message.conversation }}"
+              "value": "={{ $('Webhook').first().json.body.data.message.conversation }}"
             }
           ]
         },
@@ -622,19 +622,19 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $('Normaliza').item.json.instance.Server_url }}/chat/getBase64FromMediaMessage/{{ $('Normaliza').item.json.instance.Name }}",
+        "url": "={{ $('Normaliza').first().json.instance.Server_url }}/chat/getBase64FromMediaMessage/{{ $('Normaliza').first().json.instance.Name }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $('Normaliza').item.json.instance.Apikey }}"
+              "value": "={{ $('Normaliza').first().json.instance.Apikey }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n    \"message\": {\n        \"key\": {\n            \"id\":  \"{{ $('Normaliza').item.json.message.message_id }}\"\n        }\n    },\n    \"convertToMp4\": true\n} ",
+        "jsonBody": "={\n    \"message\": {\n        \"key\": {\n            \"id\":  \"{{ $('Normaliza').first().json.message.message_id }}\"\n        }\n    },\n    \"convertToMp4\": true\n} ",
         "options": {}
       },
       "id": "bcdab782-ff49-43a5-a228-57f4d8ab0a06",
@@ -905,7 +905,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ \"number\": $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', ''), \"text\": $json.messages }) }}",
+        "jsonBody": "={{ JSON.stringify({ \"number\": $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', ''), \"text\": $json.messages }) }}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1224,7 +1224,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('24h').item.json.remoteid }}\",\n  \"text\": \"{{ $('Split de Mensagem').item.json.output }}\",\n  \"delay\": 3000,\n  \"presence\": \"composing\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('24h').first().json.remoteid }}\",\n  \"text\": \"{{ $('Split de Mensagem').first().json.output }}\",\n  \"delay\": 3000,\n  \"presence\": \"composing\"\n}",
         "options": {}
       },
       "id": "a61262e3-317e-413a-b010-90237879e8e6",
@@ -1251,7 +1251,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('48h').item.json.remoteid }}\",\n  \"text\": \"{{ $('Split de Mensagem 2').item.json.output }}\",\n  \"delay\": 3000,\n  \"presence\": \"composing\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('48h').first().json.remoteid }}\",\n  \"text\": \"{{ $('Split de Mensagem 2').first().json.output }}\",\n  \"delay\": 3000,\n  \"presence\": \"composing\"\n}",
         "options": {}
       },
       "id": "c0c76cc9-d213-4ece-bbde-9b5b9fc24394",
@@ -1278,7 +1278,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('72H').item.json.remoteid }}\",\n  \"text\": \"{{ $('Split de Mensagem 3').item.json.output }}\",\n  \"delay\": 3000,\n  \"presence\": \"composing\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('72H').first().json.remoteid }}\",\n  \"text\": \"{{ $('Split de Mensagem 3').first().json.output }}\",\n  \"delay\": 3000,\n  \"presence\": \"composing\"\n}",
         "options": {}
       },
       "id": "4966ef7a-39e8-402c-bad5-42f98c2341a1",
@@ -1870,7 +1870,7 @@
                       "operation": "notEmpty",
                       "singleValue": true
                     },
-                    "leftValue": "={{ $('Webhook').item.json.body.data.message.audioMessage }}",
+                    "leftValue": "={{ $('Webhook').first().json.body.data.message.audioMessage }}",
                     "rightValue": ""
                   }
                 ]
@@ -1920,7 +1920,7 @@
                       "operation": "exists",
                       "singleValue": true
                     },
-                    "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+                    "leftValue": "={{ $('Webhook').first().json.body.data.message.conversation }}",
                     "rightValue": ""
                   }
                 ]
@@ -1945,7 +1945,7 @@
                       "operation": "notEmpty",
                       "singleValue": true
                     },
-                    "leftValue": "={{ $('Webhook').item.json.body.data.message.imageMessage }}",
+                    "leftValue": "={{ $('Webhook').first().json.body.data.message.imageMessage }}",
                     "rightValue": ""
                   }
                 ]
@@ -1969,7 +1969,7 @@
                       "type": "boolean",
                       "operation": "equals"
                     },
-                    "leftValue": "={{ $('Webhook').item.json.body.data.messageType === 'documentMessage' }}",
+                    "leftValue": "={{ $('Webhook').first().json.body.data.messageType === 'documentMessage' }}",
                     "rightValue": true
                   }
                 ]
@@ -1995,19 +1995,19 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $('Normaliza').item.json.instance.Server_url }}/chat/getBase64FromMediaMessage/{{ $('Normaliza').item.json.instance.Name }}",
+        "url": "={{ $('Normaliza').first().json.instance.Server_url }}/chat/getBase64FromMediaMessage/{{ $('Normaliza').first().json.instance.Name }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $('Normaliza').item.json.instance.Apikey }}"
+              "value": "={{ $('Normaliza').first().json.instance.Apikey }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n    \"message\": {\n        \"key\": {\n            \"id\":  \"{{ $('Normaliza').item.json.message.message_id }}\"\n        }\n    },\n    \"convertToMp4\": true\n} ",
+        "jsonBody": "={\n    \"message\": {\n        \"key\": {\n            \"id\":  \"{{ $('Normaliza').first().json.message.message_id }}\"\n        }\n    },\n    \"convertToMp4\": true\n} ",
         "options": {}
       },
       "id": "567a4e86-2957-40ef-bb76-046992993d31",
@@ -2024,19 +2024,19 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $('Normaliza').item.json.instance.Server_url }}/chat/getBase64FromMediaMessage/{{ $('Normaliza').item.json.instance.Name }}",
+        "url": "={{ $('Normaliza').first().json.instance.Server_url }}/chat/getBase64FromMediaMessage/{{ $('Normaliza').first().json.instance.Name }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $('Normaliza').item.json.instance.Apikey }}"
+              "value": "={{ $('Normaliza').first().json.instance.Apikey }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n    \"message\": {\n        \"key\": {\n            \"id\":  \"{{ $('Normaliza').item.json.message.message_id }}\"\n        }\n    },\n    \"convertToMp4\": true\n} ",
+        "jsonBody": "={\n    \"message\": {\n        \"key\": {\n            \"id\":  \"{{ $('Normaliza').first().json.message.message_id }}\"\n        }\n    },\n    \"convertToMp4\": true\n} ",
         "options": {}
       },
       "id": "0e117842-d890-43fe-8f96-0c402c827fa1",
@@ -2073,8 +2073,8 @@
         "operation": "toBinary",
         "sourceProperty": "base64",
         "options": {
-          "fileName": "=image {{ $('Switch').item.json.body.data.message.documentMessage.fileName }}",
-          "mimeType": "={{ $('Switch').item.json.body.data.message.documentMessage.mimetype }}"
+          "fileName": "=image {{ $('Switch').first().json.body.data.message.documentMessage.fileName }}",
+          "mimeType": "={{ $('Switch').first().json.body.data.message.documentMessage.mimetype }}"
         }
       },
       "id": "549bade8-c659-407c-ac09-8d7a22f10b60",
@@ -2650,7 +2650,7 @@
         "operation": "executeQuery",
         "query": "DELETE FROM handoff WHERE telefone = $1",
         "options": {
-          "queryReplacement": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+          "queryReplacement": "={{ $('Webhook').first().json.body.data.key.remoteJid }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -2672,7 +2672,7 @@
       "parameters": {
         "resource": "messages-api",
         "instanceName": "WhatsApp Testes",
-        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "remoteJid": "={{ $('Webhook').first().json.body.data.key.remoteJid }}",
         "messageText": "=Atendimento automático no ar! Se precisar estou aqui 😊",
         "options_message": {}
       },
@@ -2695,7 +2695,7 @@
       "parameters": {
         "resource": "messages-api",
         "instanceName": "WhatsApp Testes",
-        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "remoteJid": "={{ $('Webhook').first().json.body.data.key.remoteJid }}",
         "messageText": "=Val resgatou sua conversa, te responderá em seguida! ",
         "options_message": {}
       },
@@ -2719,7 +2719,7 @@
         "operation": "executeQuery",
         "query": "INSERT INTO handoff (telefone) VALUES ($1) ON CONFLICT (telefone) DO NOTHING",
         "options": {
-          "queryReplacement": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+          "queryReplacement": "={{ $('Webhook').first().json.body.data.key.remoteJid }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -2777,7 +2777,7 @@
           "values": [
             {
               "column": "telefone",
-              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+              "value": "={{ $('Webhook').first().json.body.data.key.remoteJid }}"
             }
           ]
         },
@@ -2840,13 +2840,13 @@
             {
               "id": "r001",
               "name": "body",
-              "value": "={{ $('Webhook').item.json.body }}",
+              "value": "={{ $('Webhook').first().json.body }}",
               "type": "object"
             },
             {
               "id": "r002",
               "name": "headers",
-              "value": "={{ $('Webhook').item.json.headers }}",
+              "value": "={{ $('Webhook').first().json.headers }}",
               "type": "object"
             }
           ]
@@ -2886,7 +2886,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE dados_cliente\nSET ultima_msg_de = 'val',\n    ultima_msg_timestamp = NOW()\nWHERE session_id = '{{ $('Dados do Usuário').item.json.idUser }}'",
+        "query": "UPDATE dados_cliente\nSET ultima_msg_de = 'val',\n    ultima_msg_timestamp = NOW()\nWHERE session_id = '{{ $('Dados do Usuário').first().json.idUser }}'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -3127,7 +3127,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"mediatype\": \"document\",\n  \"mimetype\": \"application/pdf\",\n  \"caption\": \"Segue a apresentação da Nutriskin com informações sobre o atendimento da Renata.\",\n  \"media\": \"https://drive.google.com/uc?export=download&id=11GhJ4PhO_qGzoRX0uszY5EnESJ5oad85\",\n  \"fileName\": \"Apresentacao_Nutriskin.pdf\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"mediatype\": \"document\",\n  \"mimetype\": \"application/pdf\",\n  \"caption\": \"Segue a apresentação da Nutriskin com informações sobre o atendimento da Renata.\",\n  \"media\": \"https://drive.google.com/uc?export=download&id=11GhJ4PhO_qGzoRX0uszY5EnESJ5oad85\",\n  \"fileName\": \"Apresentacao_Nutriskin.pdf\"\n}",
         "options": {}
       },
       "id": "b980c271-336b-4b6c-82a9-9bb3b602313e",
@@ -3172,7 +3172,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Para que sua consulta seja ainda mais completa, pedimos que preencha o formulário abaixo com antecedência:\\nhttps://nutr.se/2d54f5\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Para que sua consulta seja ainda mais completa, pedimos que preencha o formulário abaixo com antecedência:\\nhttps://nutr.se/2d54f5\"\n}",
         "options": {}
       },
       "id": "5cad295a-97a7-4591-83f7-38976a46ab20",
@@ -3187,7 +3187,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT estado, tipo_consulta, modalidade, nome, email, cpf, data_nascimento, altura, endereco, cep, condicao_saude FROM dados_cliente WHERE session_id = '{{ $('Dados do Usuário').item.json.idUser }}' LIMIT 1",
+        "query": "SELECT estado, tipo_consulta, modalidade, nome, email, cpf, data_nascimento, altura, endereco, cep, condicao_saude FROM dados_cliente WHERE session_id = '{{ $('Dados do Usuário').first().json.idUser }}' LIMIT 1",
         "options": {}
       },
       "id": "d5a38061-4da2-44e7-8e45-cc7fbaf8f4ca",
@@ -3345,9 +3345,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ '[DATA_HORA: ' + $now.setZone('America/Sao_Paulo').toFormat('EEEE, dd/MM/yyyy HH:mm', {locale:'pt-BR'}) + ']\\n' + $('Acumula').item.json.propertyName }}",
+        "text": "={{ '[DATA_HORA: ' + $now.setZone('America/Sao_Paulo').toFormat('EEEE, dd/MM/yyyy HH:mm', {locale:'pt-BR'}) + ']\\n' + $('Acumula').first().json.propertyName }}",
         "options": {
-          "systemMessage": "=Você é a secretária da nutricionista Renata, da Nutriskin – Clínica de Nutrição. Sua ÚNICA tarefa é coletar os dados do paciente e classificar o tipo de consulta. NUNCA se identifica com nome próprio.\n\n<dados_atuais>\nNome: {{ $('Buscar Estado').item.json.nome || '' }}\nTipo: {{ $('Buscar Estado').item.json.tipo_consulta || '' }}\nModalidade: {{ $('Buscar Estado').item.json.modalidade || '' }}\nCPF: {{ $('Buscar Estado').item.json.cpf || '' }}\nNascimento: {{ $('Buscar Estado').item.json.data_nascimento || '' }}\nEmail: {{ $('Buscar Estado').item.json.email || '' }}\nTelefone: {{ $('Dados do Usuário').item.json.telefone || '' }}\nAltura: {{ $('Buscar Estado').item.json.altura || '' }}\nEndereço: {{ $('Buscar Estado').item.json.endereco || '' }}\nCEP: {{ $('Buscar Estado').item.json.cep || '' }}\nCondição de saúde: {{ $('Buscar Estado').item.json.condicao_saude || '' }}\n</dados_atuais>\n\n═══════════════════════════════════════════════\nFLUXO — siga na ordem, pulando o que JÁ está preenchido acima.\n═══════════════════════════════════════════════\n\nPASSO 1 — Tipo de consulta (se vazio):\nPergunte: \"Será sua primeira consulta com a Renata, ou você já é paciente?\"\n- Resposta \"primeira\" / \"nova\" / \"primeira vez\" → tipo_consulta = 1a_consulta\n- Resposta \"já sou paciente\" / \"já fui\" / \"voltando\" → faça a PERGUNTA OBRIGATÓRIA DOS 12 MESES antes de qualquer outra coisa:\n  \"Faz mais ou menos de 12 meses desde a sua última consulta com a Renata?\"\n  - Se \"mais\" / \"sim\" / \"faz tempo\" / mais de 12 meses → responda EXATAMENTE:\n    \"Entendido. Como já faz mais de 12 meses desde a sua última consulta, o atendimento seguirá o formato de primeira consulta para que a Renata possa fazer uma avaliação completa e atualizada.\"\n    E marque tipo_consulta = 1a_consulta no bloco [DADOS].\n  - Se \"menos\" / \"não\" / \"recente\" → tipo_consulta = reconsulta\n\nPASSO 2 — Modalidade (se vazia):\nPergunte: \"Você prefere atendimento presencial (no consultório, em Porto Alegre) ou online (por videochamada)?\"\nAguarde a resposta antes de continuar.\n\nPASSO 3 — Coleta de dados:\n\n  ╔══ SE tipo_consulta = reconsulta ══╗\n  Peça UM CAMPO POR MENSAGEM, na ordem:\n  3.1) \"Por gentileza, me informe seu nome completo.\"\n  3.2) \"Agora, por favor, me passe seu CPF (apenas números).\"\n  Quando tiver os dois: \"Seus dados foram registrados. Vou verificar os horários disponíveis.\"\n  NÃO peça mais nada.\n  ╚══════════════════════════════════╝\n\n  ╔══ SE tipo_consulta = 1a_consulta ══╗\n  Peça UM CAMPO POR MENSAGEM, na ordem (pule o que já está preenchido em <dados_atuais>):\n\n  3.1) Nome:\n  \"Para começar, por gentileza, me informe seu nome completo.\"\n\n  3.2) Data de nascimento:\n  \"Agora, me informe sua data de nascimento (formato DD/MM/AAAA).\"\n\n  3.3) CPF:\n  \"Por favor, me passe seu CPF (apenas números, sem pontos ou traços).\"\n\n  3.4) Altura:\n  \"Qual a sua altura? Pode me informar em metros (ex: 1,75m) ou em centímetros (ex: 175cm). Caso não saiba, me diga 'não sei' que a Renata avalia no dia.\"\n\n  3.5) E-mail:\n  \"Por gentileza, me informe seu e-mail.\"\n\n  3.6) Endereço (rua + número):\n  \"Agora, me informe o endereço completo (rua e número).\"\n\n  3.7) CEP:\n  \"Por fim do endereço, me informe o CEP (apenas números).\"\n\n  3.8) Condição de saúde (APENAS se modalidade = presencial):\n  \"Antes de finalizar, preciso confirmar uma informação importante para o exame de bioimpedância: você possui alguma das seguintes condições — gestação, marca-passo ou prótese metálica?\"\n  - \"não\" / \"nenhuma\" / \"nada\" → condicao_saude = nenhuma\n  - \"gestante\" / \"grávida\" → condicao_saude = gestante\n  - \"marca-passo\" → condicao_saude = marcapasso\n  - \"prótese\" → condicao_saude = protese\n  ╚══════════════════════════════════╝\n\nPASSO 4 — Quando TODOS os dados necessários estiverem coletados:\nResponda EXATAMENTE: \"Seus dados foram registrados. Vou verificar os horários disponíveis para você.\"\n\n═══════════════════════════════════════════════\nBLOCO [DADOS] — INVISÍVEL AO PACIENTE\n═══════════════════════════════════════════════\nAPÓS cada resposta do paciente, inclua no FINAL da sua mensagem (em uma linha separada) um bloco assim, contendo APENAS o campo que o paciente acabou de informar:\n[DADOS]\ncpf=12345678900\n[/DADOS]\n\nExemplos por dupla:\n- Após nome: [DADOS]\\nnome=Maria Silva\\n[/DADOS]\n- Após nascimento: [DADOS]\\ndata_nascimento=14/01/1990\\n[/DADOS]\n- Após CPF: [DADOS]\\ncpf=12345678900\\n[/DADOS]\n- Após altura: [DADOS]\\naltura=1,75m\\n[/DADOS]\n- Após e-mail: [DADOS]\\nemail=maria@email.com\\n[/DADOS]\n- Após endereço: [DADOS]\\nendereco=Rua das Flores 123\\n[/DADOS]\n- Após CEP: [DADOS]\\ncep=90000000\\n[/DADOS]\n- Após condição: [DADOS]\\ncondicao_saude=nenhuma\\n[/DADOS]\n\nOBRIGATÓRIO: o bloco [DADOS] deve estar SEMPRE presente após qualquer informação do paciente. Inclua APENAS UM campo por bloco — o que acabou de ser informado nesta mensagem.\n\n═══════════════════════════════════════════════\nREGRAS DE FORMATAÇÃO E TOM (OBRIGATÓRIAS)\n═══════════════════════════════════════════════\n- Tom profissional, cordial, sem informalidade.\n- NUNCA use emojis. NUNCA use gírias. NUNCA use \"vc\", \"tá\", \"tbm\", \"vlw\".\n- Use sempre \"você\", \"está\", \"obrigada\".\n- NUNCA se apresente com nome próprio. Se precisar se identificar, diga: \"secretária da nutricionista Renata, da Nutriskin\".\n- Datas SEMPRE entre vírgulas: \"segunda-feira, dia 14 de novembro,\"\n- Dias da semana SEMPRE com hífen: segunda-feira, terça-feira.\n- Horário cheio: \"9 horas\". Horário quebrado: \"9h30min\".\n- Nunca invente dados. Nunca pule etapas.\n- Nunca avance para agendamento — outro sistema cuida disso."
+          "systemMessage": "=Você é a secretária da nutricionista Renata, da Nutriskin – Clínica de Nutrição. Sua ÚNICA tarefa é coletar os dados do paciente e classificar o tipo de consulta. NUNCA se identifica com nome próprio.\n\n<dados_atuais>\nNome: {{ $('Buscar Estado').first().json.nome || '' }}\nTipo: {{ $('Buscar Estado').first().json.tipo_consulta || '' }}\nModalidade: {{ $('Buscar Estado').first().json.modalidade || '' }}\nCPF: {{ $('Buscar Estado').first().json.cpf || '' }}\nNascimento: {{ $('Buscar Estado').first().json.data_nascimento || '' }}\nEmail: {{ $('Buscar Estado').first().json.email || '' }}\nTelefone: {{ $('Dados do Usuário').first().json.telefone || '' }}\nAltura: {{ $('Buscar Estado').first().json.altura || '' }}\nEndereço: {{ $('Buscar Estado').first().json.endereco || '' }}\nCEP: {{ $('Buscar Estado').first().json.cep || '' }}\nCondição de saúde: {{ $('Buscar Estado').first().json.condicao_saude || '' }}\n</dados_atuais>\n\n═══════════════════════════════════════════════\nFLUXO — siga na ordem, pulando o que JÁ está preenchido acima.\n═══════════════════════════════════════════════\n\nPASSO 1 — Tipo de consulta (se vazio):\nPergunte: \"Será sua primeira consulta com a Renata, ou você já é paciente?\"\n- Resposta \"primeira\" / \"nova\" / \"primeira vez\" → tipo_consulta = 1a_consulta\n- Resposta \"já sou paciente\" / \"já fui\" / \"voltando\" → faça a PERGUNTA OBRIGATÓRIA DOS 12 MESES antes de qualquer outra coisa:\n  \"Faz mais ou menos de 12 meses desde a sua última consulta com a Renata?\"\n  - Se \"mais\" / \"sim\" / \"faz tempo\" / mais de 12 meses → responda EXATAMENTE:\n    \"Entendido. Como já faz mais de 12 meses desde a sua última consulta, o atendimento seguirá o formato de primeira consulta para que a Renata possa fazer uma avaliação completa e atualizada.\"\n    E marque tipo_consulta = 1a_consulta no bloco [DADOS].\n  - Se \"menos\" / \"não\" / \"recente\" → tipo_consulta = reconsulta\n\nPASSO 2 — Modalidade (se vazia):\nPergunte: \"Você prefere atendimento presencial (no consultório, em Porto Alegre) ou online (por videochamada)?\"\nAguarde a resposta antes de continuar.\n\nPASSO 3 — Coleta de dados:\n\n  ╔══ SE tipo_consulta = reconsulta ══╗\n  Peça UM CAMPO POR MENSAGEM, na ordem:\n  3.1) \"Por gentileza, me informe seu nome completo.\"\n  3.2) \"Agora, por favor, me passe seu CPF (apenas números).\"\n  Quando tiver os dois: \"Seus dados foram registrados. Vou verificar os horários disponíveis.\"\n  NÃO peça mais nada.\n  ╚══════════════════════════════════╝\n\n  ╔══ SE tipo_consulta = 1a_consulta ══╗\n  Peça UM CAMPO POR MENSAGEM, na ordem (pule o que já está preenchido em <dados_atuais>):\n\n  3.1) Nome:\n  \"Para começar, por gentileza, me informe seu nome completo.\"\n\n  3.2) Data de nascimento:\n  \"Agora, me informe sua data de nascimento (formato DD/MM/AAAA).\"\n\n  3.3) CPF:\n  \"Por favor, me passe seu CPF (apenas números, sem pontos ou traços).\"\n\n  3.4) Altura:\n  \"Qual a sua altura? Pode me informar em metros (ex: 1,75m) ou em centímetros (ex: 175cm). Caso não saiba, me diga 'não sei' que a Renata avalia no dia.\"\n\n  3.5) E-mail:\n  \"Por gentileza, me informe seu e-mail.\"\n\n  3.6) Endereço (rua + número):\n  \"Agora, me informe o endereço completo (rua e número).\"\n\n  3.7) CEP:\n  \"Por fim do endereço, me informe o CEP (apenas números).\"\n\n  3.8) Condição de saúde (APENAS se modalidade = presencial):\n  \"Antes de finalizar, preciso confirmar uma informação importante para o exame de bioimpedância: você possui alguma das seguintes condições — gestação, marca-passo ou prótese metálica?\"\n  - \"não\" / \"nenhuma\" / \"nada\" → condicao_saude = nenhuma\n  - \"gestante\" / \"grávida\" → condicao_saude = gestante\n  - \"marca-passo\" → condicao_saude = marcapasso\n  - \"prótese\" → condicao_saude = protese\n  ╚══════════════════════════════════╝\n\nPASSO 4 — Quando TODOS os dados necessários estiverem coletados:\nResponda EXATAMENTE: \"Seus dados foram registrados. Vou verificar os horários disponíveis para você.\"\n\n═══════════════════════════════════════════════\nBLOCO [DADOS] — INVISÍVEL AO PACIENTE\n═══════════════════════════════════════════════\nAPÓS cada resposta do paciente, inclua no FINAL da sua mensagem (em uma linha separada) um bloco assim, contendo APENAS o campo que o paciente acabou de informar:\n[DADOS]\ncpf=12345678900\n[/DADOS]\n\nExemplos por dupla:\n- Após nome: [DADOS]\\nnome=Maria Silva\\n[/DADOS]\n- Após nascimento: [DADOS]\\ndata_nascimento=14/01/1990\\n[/DADOS]\n- Após CPF: [DADOS]\\ncpf=12345678900\\n[/DADOS]\n- Após altura: [DADOS]\\naltura=1,75m\\n[/DADOS]\n- Após e-mail: [DADOS]\\nemail=maria@email.com\\n[/DADOS]\n- Após endereço: [DADOS]\\nendereco=Rua das Flores 123\\n[/DADOS]\n- Após CEP: [DADOS]\\ncep=90000000\\n[/DADOS]\n- Após condição: [DADOS]\\ncondicao_saude=nenhuma\\n[/DADOS]\n\nOBRIGATÓRIO: o bloco [DADOS] deve estar SEMPRE presente após qualquer informação do paciente. Inclua APENAS UM campo por bloco — o que acabou de ser informado nesta mensagem.\n\n═══════════════════════════════════════════════\nREGRAS DE FORMATAÇÃO E TOM (OBRIGATÓRIAS)\n═══════════════════════════════════════════════\n- Tom profissional, cordial, sem informalidade.\n- NUNCA use emojis. NUNCA use gírias. NUNCA use \"vc\", \"tá\", \"tbm\", \"vlw\".\n- Use sempre \"você\", \"está\", \"obrigada\".\n- NUNCA se apresente com nome próprio. Se precisar se identificar, diga: \"secretária da nutricionista Renata, da Nutriskin\".\n- Datas SEMPRE entre vírgulas: \"segunda-feira, dia 14 de novembro,\"\n- Dias da semana SEMPRE com hífen: segunda-feira, terça-feira.\n- Horário cheio: \"9 horas\". Horário quebrado: \"9h30min\".\n- Nunca invente dados. Nunca pule etapas.\n- Nunca avance para agendamento — outro sistema cuida disso."
         }
       },
       "id": "cd2a4899-cbdc-4fc5-9619-cccaa0399b55",
@@ -3382,7 +3382,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Dados do Usuário').item.json.idUser }}",
+        "sessionKey": "={{ $('Dados do Usuário').first().json.idUser }}",
         "tableName": "n8n_chat_histories_c1",
         "contextWindowLength": 20
       },
@@ -3404,7 +3404,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE dados_cliente SET \n  estado = '{{ $json.novoEstado }}',\n  nome = CASE WHEN '{{ $json.dados.nome || '' }}' != '' THEN '{{ $json.dados.nome }}' ELSE COALESCE(nome, '') END,\n  email = CASE WHEN '{{ $json.dados.email || '' }}' != '' THEN '{{ $json.dados.email }}' ELSE COALESCE(email, '') END,\n  tipo_consulta = CASE WHEN '{{ $json.dados.tipo_consulta || '' }}' != '' THEN '{{ $json.dados.tipo_consulta }}' ELSE COALESCE(tipo_consulta, '') END,\n  modalidade = CASE WHEN '{{ $json.dados.modalidade || '' }}' != '' THEN '{{ $json.dados.modalidade }}' ELSE COALESCE(modalidade, '') END,\n  cpf = CASE WHEN '{{ $json.dados.cpf || '' }}' != '' THEN '{{ $json.dados.cpf }}' ELSE COALESCE(cpf, '') END,\n  data_nascimento = CASE WHEN '{{ $json.dados.data_nascimento || $json.dados.nascimento || '' }}' != '' THEN '{{ $json.dados.data_nascimento || $json.dados.nascimento }}' ELSE COALESCE(data_nascimento, '') END,\n  altura = CASE WHEN '{{ $json.dados.altura || '' }}' != '' THEN '{{ $json.dados.altura }}' ELSE COALESCE(altura, '') END,\n  endereco = CASE WHEN '{{ $json.dados.endereco || '' }}' != '' THEN '{{ $json.dados.endereco }}' ELSE COALESCE(endereco, '') END,\n  cep = CASE WHEN '{{ $json.dados.cep || '' }}' != '' THEN '{{ $json.dados.cep }}' ELSE COALESCE(cep, '') END,\n  condicao_saude = CASE WHEN '{{ $json.dados.condicao_saude || '' }}' != '' THEN '{{ $json.dados.condicao_saude }}' ELSE COALESCE(condicao_saude, '') END\nWHERE session_id = '{{ $('Dados do Usuário').item.json.idUser }}'",
+        "query": "UPDATE dados_cliente SET \n  estado = '{{ $json.novoEstado }}',\n  nome = CASE WHEN '{{ $json.dados.nome || '' }}' != '' THEN '{{ $json.dados.nome }}' ELSE COALESCE(nome, '') END,\n  email = CASE WHEN '{{ $json.dados.email || '' }}' != '' THEN '{{ $json.dados.email }}' ELSE COALESCE(email, '') END,\n  tipo_consulta = CASE WHEN '{{ $json.dados.tipo_consulta || '' }}' != '' THEN '{{ $json.dados.tipo_consulta }}' ELSE COALESCE(tipo_consulta, '') END,\n  modalidade = CASE WHEN '{{ $json.dados.modalidade || '' }}' != '' THEN '{{ $json.dados.modalidade }}' ELSE COALESCE(modalidade, '') END,\n  cpf = CASE WHEN '{{ $json.dados.cpf || '' }}' != '' THEN '{{ $json.dados.cpf }}' ELSE COALESCE(cpf, '') END,\n  data_nascimento = CASE WHEN '{{ $json.dados.data_nascimento || $json.dados.nascimento || '' }}' != '' THEN '{{ $json.dados.data_nascimento || $json.dados.nascimento }}' ELSE COALESCE(data_nascimento, '') END,\n  altura = CASE WHEN '{{ $json.dados.altura || '' }}' != '' THEN '{{ $json.dados.altura }}' ELSE COALESCE(altura, '') END,\n  endereco = CASE WHEN '{{ $json.dados.endereco || '' }}' != '' THEN '{{ $json.dados.endereco }}' ELSE COALESCE(endereco, '') END,\n  cep = CASE WHEN '{{ $json.dados.cep || '' }}' != '' THEN '{{ $json.dados.cep }}' ELSE COALESCE(cep, '') END,\n  condicao_saude = CASE WHEN '{{ $json.dados.condicao_saude || '' }}' != '' THEN '{{ $json.dados.condicao_saude }}' ELSE COALESCE(condicao_saude, '') END\nWHERE session_id = '{{ $('Dados do Usuário').first().json.idUser }}'",
         "options": {}
       },
       "id": "d5d7d272-78fa-48f3-b611-bea4d0f46ac8",
@@ -3475,7 +3475,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Dados do Usuário').item.json.idUser }}",
+        "sessionKey": "={{ $('Dados do Usuário').first().json.idUser }}",
         "tableName": "n8n_chat_histories_c2",
         "contextWindowLength": 20
       },
@@ -3497,7 +3497,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE dados_cliente SET estado = 'agendado' WHERE session_id = '{{ $('Dados do Usuário').item.json.idUser }}'",
+        "query": "UPDATE dados_cliente SET estado = 'agendado' WHERE session_id = '{{ $('Dados do Usuário').first().json.idUser }}'",
         "options": {}
       },
       "id": "a41fff7a-b8e0-4e18-b426-00e071675a90",
@@ -3518,9 +3518,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ '[DATA_HORA: ' + $now.setZone('America/Sao_Paulo').toFormat('EEEE, dd/MM/yyyy HH:mm', {locale:'pt-BR'}) + ']\\n' + $('Acumula').item.json.propertyName }}",
+        "text": "={{ '[DATA_HORA: ' + $now.setZone('America/Sao_Paulo').toFormat('EEEE, dd/MM/yyyy HH:mm', {locale:'pt-BR'}) + ']\\n' + $('Acumula').first().json.propertyName }}",
         "options": {
-          "systemMessage": "=Você é a secretária da nutricionista Renata, da Nutriskin – Clínica de Nutrição. Sua tarefa é responder dúvidas gerais do paciente sobre a clínica e os serviços. NUNCA se identifica com nome próprio.\n\nPaciente: {{ $('Buscar Estado').item.json.nome || 'não identificado' }}\nEstado: {{ $('Buscar Estado').item.json.estado || 'novo' }}\n\n═══════════════════════════════════════════════\nSAUDAÇÕES\n═══════════════════════════════════════════════\nSE a mensagem for uma saudação genérica (oi, olá, bom dia, boa tarde, boa noite):\n- Sem nome cadastrado: \"Olá! Sou secretária da nutricionista Renata, da Nutriskin. Como posso ajudar você hoje?\"\n- Com nome cadastrado: \"Olá, [nome]! Como posso ajudar você hoje?\"\nNÃO pergunte sobre consulta a menos que o paciente mencione.\n\n═══════════════════════════════════════════════\nPODE RESPONDER SOZINHA\n═══════════════════════════════════════════════\n- VALORES (atualizados):\n  • 1ª consulta presencial: R$ 460,00\n  • Reconsulta presencial: R$ 380,00\n  • 1ª consulta online: R$ 320,00\n  • Reconsulta online: R$ 280,00\n- Endereço: Rua Mostardeiro, nº 5, sala 812, Porto Alegre-RS.\n- Estacionamento rotativo pago disponível no local.\n- Telefones: WhatsApp (51) 99913-9758 | Fixo (51) 3314-8520.\n- Plano alimentar: entregue em até 5 dias úteis após a consulta, sempre no turno da noite. Pedir verificação na caixa de spam.\n- App WebDiet: o plano fica disponível na aba \"Arquivos Anexos\". PIN de acesso: 003144.\n- Pagamento: Pix, cartão, transferência bancária ou dinheiro.\n- Dados bancários (quando solicitado):\n  Banco do Brasil\n  Agência 1899-6\n  Conta 155.027-6\n  Chave Pix CNPJ: 21.089.571/0001-14\n- Mensagem de áudio: \"Para melhor atendê-lo, solicitamos que as mensagens sejam enviadas por escrito, por gentileza.\"\n- Desmarcar consulta (apenas se o paciente pedir EXPLICITAMENTE para desmarcar):\n  \"Sua consulta está desmarcada. Ficamos à disposição. Caso queira reagendar, é só me informar o melhor dia e horário.\"\n  ATENÇÃO: NUNCA desmarque sem o paciente pedir claramente. Resposta curta como \"terça\" ou \"10h\" NÃO é pedido de desmarcação — é resposta a outra pergunta.\n\n═══════════════════════════════════════════════\nENCAMINHAR PARA A RENATA (NÃO RESPONDER)\n═══════════════════════════════════════════════\n- Dúvidas sobre dieta, alimentação, suplementação\n- Resultado de exames\n- Qualquer dúvida médica ou nutricional\n- Pedidos de desconto\n- Situações que você não tem certeza\n\nResposta padrão para encaminhamento:\n\"Recebi sua mensagem. Vou repassar à Renata e ela entrará em contato o mais breve possível.\"\n\n═══════════════════════════════════════════════\nSE PACIENTE QUER AGENDAR\n═══════════════════════════════════════════════\nResponda apenas: \"Claro! Será sua primeira consulta com a Renata, ou você já é paciente?\"\nNÃO colete dados ainda — o sistema de cadastro cuida disso.\n\n═══════════════════════════════════════════════\nREGRAS DE FORMATAÇÃO E TOM\n═══════════════════════════════════════════════\n- Tom profissional, cordial. NUNCA use emojis. NUNCA use gírias.\n- Use \"você\", \"está\", \"obrigada\". NUNCA \"vc\", \"tá\", \"vlw\".\n- NUNCA se apresente com nome próprio.\n- Datas entre vírgulas: \", dia 14 de novembro,\".\n- Dias com hífen: segunda-feira, terça-feira.\n- Horário cheio: \"14 horas\". Horário quebrado: \"14h30min\".\n- Nunca invente informações.\n\nPara dúvidas sobre diferenciais e tecnologias da clínica, use a ferramenta de busca de documentos antes de responder."
+          "systemMessage": "=Você é a secretária da nutricionista Renata, da Nutriskin – Clínica de Nutrição. Sua tarefa é responder dúvidas gerais do paciente sobre a clínica e os serviços. NUNCA se identifica com nome próprio.\n\nPaciente: {{ $('Buscar Estado').first().json.nome || 'não identificado' }}\nEstado: {{ $('Buscar Estado').first().json.estado || 'novo' }}\n\n═══════════════════════════════════════════════\nSAUDAÇÕES\n═══════════════════════════════════════════════\nSE a mensagem for uma saudação genérica (oi, olá, bom dia, boa tarde, boa noite):\n- Sem nome cadastrado: \"Olá! Sou secretária da nutricionista Renata, da Nutriskin. Como posso ajudar você hoje?\"\n- Com nome cadastrado: \"Olá, [nome]! Como posso ajudar você hoje?\"\nNÃO pergunte sobre consulta a menos que o paciente mencione.\n\n═══════════════════════════════════════════════\nPODE RESPONDER SOZINHA\n═══════════════════════════════════════════════\n- VALORES (atualizados):\n  • 1ª consulta presencial: R$ 460,00\n  • Reconsulta presencial: R$ 380,00\n  • 1ª consulta online: R$ 320,00\n  • Reconsulta online: R$ 280,00\n- Endereço: Rua Mostardeiro, nº 5, sala 812, Porto Alegre-RS.\n- Estacionamento rotativo pago disponível no local.\n- Telefones: WhatsApp (51) 99913-9758 | Fixo (51) 3314-8520.\n- Plano alimentar: entregue em até 5 dias úteis após a consulta, sempre no turno da noite. Pedir verificação na caixa de spam.\n- App WebDiet: o plano fica disponível na aba \"Arquivos Anexos\". PIN de acesso: 003144.\n- Pagamento: Pix, cartão, transferência bancária ou dinheiro.\n- Dados bancários (quando solicitado):\n  Banco do Brasil\n  Agência 1899-6\n  Conta 155.027-6\n  Chave Pix CNPJ: 21.089.571/0001-14\n- Mensagem de áudio: \"Para melhor atendê-lo, solicitamos que as mensagens sejam enviadas por escrito, por gentileza.\"\n- Desmarcar consulta (apenas se o paciente pedir EXPLICITAMENTE para desmarcar):\n  \"Sua consulta está desmarcada. Ficamos à disposição. Caso queira reagendar, é só me informar o melhor dia e horário.\"\n  ATENÇÃO: NUNCA desmarque sem o paciente pedir claramente. Resposta curta como \"terça\" ou \"10h\" NÃO é pedido de desmarcação — é resposta a outra pergunta.\n\n═══════════════════════════════════════════════\nENCAMINHAR PARA A RENATA (NÃO RESPONDER)\n═══════════════════════════════════════════════\n- Dúvidas sobre dieta, alimentação, suplementação\n- Resultado de exames\n- Qualquer dúvida médica ou nutricional\n- Pedidos de desconto\n- Situações que você não tem certeza\n\nResposta padrão para encaminhamento:\n\"Recebi sua mensagem. Vou repassar à Renata e ela entrará em contato o mais breve possível.\"\n\n═══════════════════════════════════════════════\nSE PACIENTE QUER AGENDAR\n═══════════════════════════════════════════════\nResponda apenas: \"Claro! Será sua primeira consulta com a Renata, ou você já é paciente?\"\nNÃO colete dados ainda — o sistema de cadastro cuida disso.\n\n═══════════════════════════════════════════════\nREGRAS DE FORMATAÇÃO E TOM\n═══════════════════════════════════════════════\n- Tom profissional, cordial. NUNCA use emojis. NUNCA use gírias.\n- Use \"você\", \"está\", \"obrigada\". NUNCA \"vc\", \"tá\", \"vlw\".\n- NUNCA se apresente com nome próprio.\n- Datas entre vírgulas: \", dia 14 de novembro,\".\n- Dias com hífen: segunda-feira, terça-feira.\n- Horário cheio: \"14 horas\". Horário quebrado: \"14h30min\".\n- Nunca invente informações.\n\nPara dúvidas sobre diferenciais e tecnologias da clínica, use a ferramenta de busca de documentos antes de responder."
         }
       },
       "id": "64b28303-468b-4cc7-993d-fc9accf21ba7",
@@ -3555,7 +3555,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Dados do Usuário').item.json.idUser }}",
+        "sessionKey": "={{ $('Dados do Usuário').first().json.idUser }}",
         "tableName": "n8n_chat_histories_c4",
         "contextWindowLength": 20
       },
@@ -3599,7 +3599,7 @@
           "conditions": [
             {
               "id": "7168cb23-74cd-4913-8312-9ddd35e80a12",
-              "leftValue": "={{ $('Extrair Dados').item.json.novoEstado }}",
+              "leftValue": "={{ $('Extrair Dados').first().json.novoEstado }}",
               "rightValue": "dados_ok",
               "operator": {
                 "type": "string",
@@ -3634,31 +3634,31 @@
               "id": "11036cd4-19b8-4ad5-bcb6-34f5f175f8be",
               "name": "telefone",
               "type": "string",
-              "value": "={{ $('Acumula').item.json.telefone }}"
+              "value": "={{ $('Acumula').first().json.telefone }}"
             },
             {
               "id": "8e3bbca7-d046-478f-9e46-3a0089a04573",
               "name": "id",
               "type": "string",
-              "value": "={{ $('Acumula').item.json.id }}"
+              "value": "={{ $('Acumula').first().json.id }}"
             },
             {
               "id": "49987860-f549-489a-a5c2-18b51d6e46a6",
               "name": "nome",
               "type": "string",
-              "value": "={{ $('Extrair Dados').item.json.nome }}"
+              "value": "={{ $('Extrair Dados').first().json.nome }}"
             },
             {
               "id": "57720cdb-6131-440a-98be-492a78f1542f",
               "name": "tipo_consulta",
               "type": "string",
-              "value": "={{ $('Extrair Dados').item.json.tipo_consulta }}"
+              "value": "={{ $('Extrair Dados').first().json.tipo_consulta }}"
             },
             {
               "id": "87090ca8-c0a6-471f-b1e9-a44370ed0162",
               "name": "modalidade",
               "type": "string",
-              "value": "={{ $('Extrair Dados').item.json.modalidade }}"
+              "value": "={{ $('Extrair Dados').first().json.modalidade }}"
             }
           ]
         },
@@ -3676,7 +3676,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT estado, tipo_consulta, modalidade, nome, email, cpf, data_nascimento, altura, endereco, cep FROM dados_cliente WHERE session_id = '{{ $('Dados do Usuário').item.json.idUser }}' LIMIT 1",
+        "query": "SELECT estado, tipo_consulta, modalidade, nome, email, cpf, data_nascimento, altura, endereco, cep FROM dados_cliente WHERE session_id = '{{ $('Dados do Usuário').first().json.idUser }}' LIMIT 1",
         "options": {}
       },
       "id": "97dc78ac-2ef3-4e8f-801f-f5b57edd9a48",
@@ -3803,7 +3803,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"mediatype\": \"image\",\n  \"mimetype\": \"image/jpeg\",\n  \"caption\": \"Segue a folha de preparo para a bioimpedância. Por favor, siga as orientações para garantir a precisão dos resultados do exame de composição corporal no dia da consulta.\",\n  \"media\": \"https://drive.google.com/uc?export=download&id=1Bi_M9ZHlzaNfnpeEZ-ZR23p-e0mY-v8A\",\n  \"fileName\": \"Folha_Preparo_Bioimpedancia.jpeg\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"mediatype\": \"image\",\n  \"mimetype\": \"image/jpeg\",\n  \"caption\": \"Segue a folha de preparo para a bioimpedância. Por favor, siga as orientações para garantir a precisão dos resultados do exame de composição corporal no dia da consulta.\",\n  \"media\": \"https://drive.google.com/uc?export=download&id=1Bi_M9ZHlzaNfnpeEZ-ZR23p-e0mY-v8A\",\n  \"fileName\": \"Folha_Preparo_Bioimpedancia.jpeg\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -3848,7 +3848,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"mediatype\": \"document\",\n  \"mimetype\": \"application/pdf\",\n  \"caption\": \"Segue a apresentação da Nutriskin com informações sobre o atendimento da Renata.\",\n  \"media\": \"https://drive.google.com/uc?export=download&id=11GhJ4PhO_qGzoRX0uszY5EnESJ5oad85\",\n  \"fileName\": \"Apresentacao_Nutriskin.pdf\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"mediatype\": \"document\",\n  \"mimetype\": \"application/pdf\",\n  \"caption\": \"Segue a apresentação da Nutriskin com informações sobre o atendimento da Renata.\",\n  \"media\": \"https://drive.google.com/uc?export=download&id=11GhJ4PhO_qGzoRX0uszY5EnESJ5oad85\",\n  \"fileName\": \"Apresentacao_Nutriskin.pdf\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -3893,7 +3893,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Para que sua consulta seja ainda mais completa, pedimos que preencha o formulário abaixo com antecedência:\\nhttps://nutr.se/2d54f5\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Para que sua consulta seja ainda mais completa, pedimos que preencha o formulário abaixo com antecedência:\\nhttps://nutr.se/2d54f5\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -3938,7 +3938,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Como a sua consulta é online, realizamos a avaliação de composição corporal de forma remota através do Body 3D, uma tecnologia de análise corporal por fotos com inteligência artificial. Para isso, será necessário o envio de algumas fotos seguindo as orientações que a Renata enviará pessoalmente antes da consulta.\\n\\nO link da sessão online também será enviado minutos antes do atendimento. Qualquer dúvida, estou à disposição.\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Como a sua consulta é online, realizamos a avaliação de composição corporal de forma remota através do Body 3D, uma tecnologia de análise corporal por fotos com inteligência artificial. Para isso, será necessário o envio de algumas fotos seguindo as orientações que a Renata enviará pessoalmente antes da consulta.\\n\\nO link da sessão online também será enviado minutos antes do atendimento. Qualquer dúvida, estou à disposição.\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -3983,7 +3983,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Como a sua reconsulta é online, lembrando que realizamos a avaliação corporal através do Body 3D. A Renata enviará as orientações para as fotos antes do atendimento, e o link da sessão online também será enviado minutos antes da consulta. Qualquer dúvida, estou à disposição.\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"Como a sua reconsulta é online, lembrando que realizamos a avaliação corporal através do Body 3D. A Renata enviará as orientações para as fotos antes do atendimento, e o link da sessão online também será enviado minutos antes da consulta. Qualquer dúvida, estou à disposição.\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -4027,7 +4027,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').item.json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"{{ $json.mensagem }}\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Dados do Usuário').first().json.telefone.replace('@s.whatsapp.net', '') }}\",\n  \"text\": \"{{ $json.mensagem }}\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
