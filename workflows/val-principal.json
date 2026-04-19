@@ -3458,7 +3458,41 @@
     },
     {
       "parameters": {
-        "jsCode": "// v7: junta confirmação conversacional do LLM + pergunta determinística do Montar Pergunta Cadastro.\nconst confirmacaoRaw = ($('Cérebro 1 — Cadastro').first().json.output || '').toString().trim();\n// Remove qualquer bloco [DADOS] ou [QUALQUER COISA] que o LLM possa vazar\nconst confirmacao = confirmacaoRaw.replace(/\\[[A-Z_\\/]+\\][\\s\\S]*?\\[\\/[A-Z_\\/]+\\]/g, '').replace(/\\[[A-Z_\\/]+\\]/g, '').trim();\nconst pergunta = ($('Montar Pergunta Cadastro').first().json.pergunta || '').toString().trim();\n\nconst partes = [confirmacao, pergunta].filter(s => s && s.length > 0);\nconst mensagem = partes.join('\\n\\n');\n\nconst splitMessages = mensagem.split('\\n').map(m => m.trim()).filter(m => m.length > 0);\n\nreturn {\n  messages: splitMessages\n};"
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "p7v01-0000-0000-0000-000000000001",
+              "leftValue": "={{ ['tipo_consulta','modalidade','12_meses'].includes($json.askingField) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c7e1f003-7v00-0000-0000-000000000003",
+      "name": "Pula Cérebro 1?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6720,
+        7300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// v7.1: junta pergunta determinística + (opcionalmente) confirmação do LLM.\n// Se askingField for um campo inicial (tipo_consulta, modalidade, 12_meses), pula a confirmação.\nconst mp = $('Montar Pergunta Cadastro').first().json;\nconst askingField = mp.askingField || '';\nconst pergunta = (mp.pergunta || '').toString().trim();\nconst pulaCerebro = ['tipo_consulta','modalidade','12_meses'].includes(askingField);\n\nlet confirmacao = '';\nif (!pulaCerebro) {\n  try {\n    const raw = ($('Cérebro 1 — Cadastro').first().json.output || '').toString().trim();\n    // Remove qualquer bloco [DADOS] ou [QUALQUER COISA] que o LLM possa vazar\n    confirmacao = raw.replace(/\\[[A-Z_\\/]+\\][\\s\\S]*?\\[\\/[A-Z_\\/]+\\]/g, '').replace(/\\[[A-Z_\\/]+\\]/g, '').trim();\n  } catch (e) {\n    confirmacao = '';\n  }\n}\n\nconst partes = [confirmacao, pergunta].filter(s => s && s.length > 0);\nconst mensagem = partes.join('\\n\\n');\n\nconst splitMessages = mensagem.split('\\n').map(m => m.trim()).filter(m => m.length > 0);\n\nreturn {\n  messages: splitMessages\n};"
       },
       "id": "0ac1e0b4-8185-4260-b183-ed259d0eba6f",
       "name": "Code Cérebro 1",
@@ -4031,7 +4065,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Monta a mensagem de confirmação literal do checklist da Renata\n// baseado em tipo + modalidade + data + horário\n\nconst horario = $('Extrair Horário').first().json;\nconst estado = $('Buscar Estado').first().json;\nconst detect = $('Detectar Agendamento').first().json;\n\nconst startDateTime = horario.startDateTime; // ex: \"2026-04-13T10:00:00-03:00\"\nconst date = new Date(startDateTime);\n\n// Day of week in pt-BR (calculate from local time, force SP timezone)\nconst diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];\nconst meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];\n\n// Parse direto da string ISO pra evitar UTC drift\nconst m = startDateTime.match(/(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})/);\nconst year = parseInt(m[1]);\nconst month = parseInt(m[2]); // 1-12\nconst day = parseInt(m[3]);\nconst hour = parseInt(m[4]);\nconst minute = parseInt(m[5]);\n\n// Calculate day of week without timezone surprises\nconst localDate = new Date(year, month - 1, day);\nconst dow = diasSemana[localDate.getDay()];\nconst mesNome = meses[month - 1];\n\n// Format hour: cheio = \"X horas\", quebrado = \"XhYYmin\"\nlet horarioStr;\nif (minute === 0) {\n  horarioStr = hour + ' horas';\n} else {\n  horarioStr = hour + 'h' + String(minute).padStart(2,'0') + 'min';\n}\n\nconst dataFmt = dow + ', dia ' + day + ' de ' + mesNome;\nconst nome = estado.nome || '';\nconst tipo = detect.tipo;\n\nlet mensagem = '';\n\nif (tipo === '1a_presencial') {\n  mensagem = 'Olá, ' + nome + '. Sua consulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + ', no consultório (presencial). Em instantes envio a apresentação da Nutriskin, o link do formulário pré-consulta e a folha de preparo para o exame de bioimpedância. Qualquer dúvida, estou à disposição.';\n} else if (tipo === '1a_online') {\n  mensagem = 'Olá, ' + nome + '. Sua consulta online com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + '. Em instantes envio a apresentação da Nutriskin, o link do formulário pré-consulta e as orientações sobre a avaliação corporal por fotos (Body 3D). Qualquer dúvida, estou à disposição.';\n} else if (tipo === 'reconsulta_presencial') {\n  mensagem = 'Olá, ' + nome + '. Sua reconsulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + ', no consultório (presencial). Caso tenha exames recentes para trazer, lembre-se de separá-los para o dia da consulta. Qualquer dúvida, estou à disposição.';\n} else if (tipo === 'reconsulta_online') {\n  mensagem = 'Olá, ' + nome + '. Sua reconsulta online com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + '. Em instantes envio as orientações sobre a avaliação corporal por fotos (Body 3D). Qualquer dúvida, estou à disposição.';\n} else {\n  mensagem = 'Olá, ' + nome + '. Sua consulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + '. Qualquer dúvida, estou à disposição.';\n}\n\nreturn [{ json: { mensagem, tipo, gestante: detect.gestante } }];"
+        "jsCode": "// Monta a mensagem de confirmação literal do checklist da Renata\n// baseado em tipo + modalidade + data + horário\n\nconst horario = $('Extrair Horário').first().json;\nconst estado = $('Buscar Estado').first().json;\nconst detect = $('Detectar Agendamento').first().json;\n\nconst startDateTime = horario.startDateTime; // ex: \"2026-04-13T10:00:00-03:00\"\nconst date = new Date(startDateTime);\n\n// Day of week in pt-BR (calculate from local time, force SP timezone)\nconst diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];\nconst meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];\n\n// Parse direto da string ISO pra evitar UTC drift\nconst m = startDateTime.match(/(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})/);\nconst year = parseInt(m[1]);\nconst month = parseInt(m[2]); // 1-12\nconst day = parseInt(m[3]);\nconst hour = parseInt(m[4]);\nconst minute = parseInt(m[5]);\n\n// Calculate day of week without timezone surprises\nconst localDate = new Date(year, month - 1, day);\nconst dow = diasSemana[localDate.getDay()];\nconst mesNome = meses[month - 1];\n\n// Format hour: cheio = \"X horas\", quebrado = \"XhYYmin\"\nlet horarioStr;\nif (minute === 0) {\n  horarioStr = hour + ' horas';\n} else {\n  horarioStr = hour + 'h' + String(minute).padStart(2,'0') + 'min';\n}\n\nconst dataFmt = dow + ', dia ' + day + ' de ' + mesNome;\nconst nome = estado.nome || '';\nconst tipo = detect.tipo;\n\nlet mensagem = '';\n\nif (tipo === '1a_presencial') {\n  if (detect.gestante === true) {\n    mensagem = 'Olá, ' + nome + '. Sua consulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + ', no consultório (presencial). Em instantes envio a apresentação da Nutriskin e o link do formulário pré-consulta. Qualquer dúvida, estou à disposição.';\n  } else {\n    mensagem = 'Olá, ' + nome + '. Sua consulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + ', no consultório (presencial). Em instantes envio a apresentação da Nutriskin, o link do formulário pré-consulta e a folha de preparo para o exame de bioimpedância. Qualquer dúvida, estou à disposição.';\n  }\n} else if (tipo === '1a_online') {\n  mensagem = 'Olá, ' + nome + '. Sua consulta online com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + '. Em instantes envio a apresentação da Nutriskin, o link do formulário pré-consulta e as orientações sobre a avaliação corporal por fotos (Body 3D). Qualquer dúvida, estou à disposição.';\n} else if (tipo === 'reconsulta_presencial') {\n  mensagem = 'Olá, ' + nome + '. Sua reconsulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + ', no consultório (presencial). Caso tenha exames recentes para trazer, lembre-se de separá-los para o dia da consulta. Qualquer dúvida, estou à disposição.';\n} else if (tipo === 'reconsulta_online') {\n  mensagem = 'Olá, ' + nome + '. Sua reconsulta online com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + '. Em instantes envio as orientações sobre a avaliação corporal por fotos (Body 3D). Qualquer dúvida, estou à disposição.';\n} else {\n  mensagem = 'Olá, ' + nome + '. Sua consulta com a nutricionista Renata está agendada para ' + dataFmt + ', às ' + horarioStr + '. Qualquer dúvida, estou à disposição.';\n}\n\nreturn [{ json: { mensagem, tipo, gestante: detect.gestante } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -5462,6 +5496,24 @@
     },
     "Montar Pergunta Cadastro": {
       "main": [
+        [
+          {
+            "node": "Pula Cérebro 1?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pula Cérebro 1?": {
+      "main": [
+        [
+          {
+            "node": "Code Cérebro 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Cérebro 1 — Cadastro",
